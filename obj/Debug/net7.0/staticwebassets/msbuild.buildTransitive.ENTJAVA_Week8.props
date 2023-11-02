@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\ENTJAVA_Week8.props" />
-</Project>

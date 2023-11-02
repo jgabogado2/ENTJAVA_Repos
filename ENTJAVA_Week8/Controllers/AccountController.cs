@@ -22,6 +22,21 @@ namespace MyWebApplication.Controllers
             return View();
         }
 
+        public ActionResult Profile()
+        {
+            UserManager um = new UserManager();
+            string loginName = User.Identity.Name;
+
+            UsersModel user = um.getLoginName(loginName); 
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
         [AuthorizeRoles("Admin")]
         public ActionResult Users()
         {
@@ -32,6 +47,7 @@ namespace MyWebApplication.Controllers
             return View(user);
         }
 
+        
         [HttpPost]
         public ActionResult SignUp(UserModel user)
         {

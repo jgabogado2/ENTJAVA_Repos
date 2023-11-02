@@ -74,12 +74,13 @@ namespace ENTJAVA_Week8.Models.EntityManager
                     // Update the existing user
                     existingSysUser.ModifiedBy = 1; // This has to be updated
                     existingSysUser.ModifiedDateTime = DateTime.Now;
-
+                    existingSysUser.PasswordEncryptedText = user.Password;
 
                     // You can also update other properties of the user as needed
                     existingUser.FirstName = user.FirstName;
                     existingUser.LastName = user.LastName;
                     existingUser.Gender = user.Gender;
+                    
 
                     UserRole userRole = db.UserRole.FirstOrDefault(ur => ur.UserID == existingUser.UserID);
 
@@ -127,6 +128,37 @@ namespace ENTJAVA_Week8.Models.EntityManager
             }
 
         }
+        public UsersModel getLoginName(string loginName)
+        {
+            UsersModel list = new UsersModel();
+
+            using (MyDBContext db = new MyDBContext())
+            {
+                var users = from u in db.Users
+                            join us in db.SystemUsers
+                            on u.UserID equals us.UserID
+                            join ur in db.UserRole
+                            on u.UserID equals ur.UserID
+                            join r in db.Role
+                            on ur.LookUpRoleID equals r.RoleID
+                            where us.LoginName == loginName 
+                            select new { u, us, r, ur };
+
+                list.Users = users.Select(records => new UserModel()
+                {
+                    LoginName = records.us.LoginName,
+                    FirstName = records.u.FirstName,
+                    LastName = records.u.LastName,
+                    Password = records.us.PasswordEncryptedText,
+                    Gender = records.u.Gender,
+                    CreatedBy = records.u.CreatedBy,
+                    AccountImage = records.u.AccountImage ?? string.Empty,
+                    RoleID = records.ur.LookUpRoleID,
+                    RoleName = records.r.RoleName
+                }).ToList();
+            }
+            return list;
+        }
 
         public UsersModel GetAllUsers()
         {
@@ -142,7 +174,7 @@ namespace ENTJAVA_Week8.Models.EntityManager
                             join r in db.Role
                             on ur.LookUpRoleID equals r.RoleID
                             select new { u, us, r, ur };
-
+                            
                 list.Users = users.Select(records => new UserModel()
                 {
                     LoginName = records.us.LoginName,
@@ -152,14 +184,15 @@ namespace ENTJAVA_Week8.Models.EntityManager
                     CreatedBy = records.u.CreatedBy,
                     AccountImage = records.u.AccountImage ?? string.Empty,
                     RoleID = records.ur.LookUpRoleID,
-                    RoleName = records.r.RoleName
+                    RoleName = records.r.RoleName   
 
                 }).ToList();
             }
 
+
             return list;
         }
-
+                            
         public bool IsLoginNameExist(string loginName)
         {
             using (MyDBContext db = new MyDBContext())
@@ -180,7 +213,7 @@ namespace ENTJAVA_Week8.Models.EntityManager
                     return string.Empty;
             }
         }
-
+                    
         public bool IsUserInRole(string loginName, string roleName)
         {
             using (MyDBContext db = new MyDBContext())
@@ -196,7 +229,7 @@ namespace ENTJAVA_Week8.Models.EntityManager
                                 ur.UserID.Equals(su.UserID)
                                 select r.RoleName;
                     if (roles != null)
-                    {
+                    {   
                         return roles.Any();
                     }
                 }

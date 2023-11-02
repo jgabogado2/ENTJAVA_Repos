@@ -42,6 +42,7 @@ namespace ENTJAVA_Week8.Models.ViewModel
     public class UsersModel
     {
         public List<UserModel> Users { get; set; }
+    
     }
 
     public class UserLoginModel
@@ -56,4 +57,6 @@ namespace ENTJAVA_Week8.Models.ViewModel
         [Display(Name = "Password")]
         public string Password { get; set; }
     }
+
+
 }

@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\ENTJAVA_Week8.props" />
-</Project>
